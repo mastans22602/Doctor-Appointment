@@ -1,5 +1,9 @@
 import streamlit as st
+import requests
 from datetime import date
+
+# ── n8n Webhook URL ───────────────────────────────────────────────────────────
+N8N_WEBHOOK = "https://among-harbor-borough.ngrok-free.dev/webhook/doctor-form"
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Doctor Appointment", page_icon="🩺", layout="centered")
@@ -236,9 +240,25 @@ if submitted:
         for e in errors:
             st.error(e)
     else:
-        st.success(
-            f"✅ Appointment booked for **{name}** on **{appt_date.strftime('%d %b %Y')}** "
-            f"at **{time_slot}**. A confirmation will be sent to **{email}**."
-        )
+        payload = {
+            "name": name,
+            "email": email,
+            "contact": contact,
+            "problem": problem,
+            "date": str(appt_date),
+            "time_slot": time_slot,
+            "address": address,
+        }
+        try:
+            response = requests.post(N8N_WEBHOOK, json=payload, timeout=10)
+            if response.status_code == 200:
+                st.success(
+                    f"✅ Appointment booked for **{name}** on **{appt_date.strftime('%d %b %Y')}** "
+                    f"at **{time_slot}**. A confirmation will be sent to **{email}**."
+                )
+            else:
+                st.error(f"⚠️ Submission failed. Server returned status: {response.status_code}")
+        except Exception as e:
+            st.error(f"❌ Could not reach server: {e}")
 
 st.markdown('</div>', unsafe_allow_html=True)
