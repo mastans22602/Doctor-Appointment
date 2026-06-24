@@ -3,9 +3,7 @@ import requests
 from datetime import date
 
 # ── n8n Webhook URL ───────────────────────────────────────────────────────────
-
 N8N_WEBHOOK = "https://among-harbor-borough.ngrok-free.dev/webhook-test/doctor-form"
-
 
 # ── Page config ──────────────────────────────────────────────────────────────
 st.set_page_config(page_title="Doctor Appointment", page_icon="🩺", layout="centered")
